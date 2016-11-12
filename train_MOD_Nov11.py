@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import numpy as np
 import argparse
@@ -27,6 +28,8 @@ def main():
 	parser.add_argument('--resume_model', type=str, default=None,
                        help='Pre-Trained Model Path, to resume from')
 	parser.add_argument('--data_dir', type=str, default='Data',
+                       help='Data Directory')
+	parser.add_argument('--output_dir', type=str, default='Data',
                        help='Data Directory')
 	
 
@@ -75,8 +78,8 @@ def main():
 			_, loss, prediction = sess.run( [optim, bn_tensors['loss'], bn_tensors['prediction']], feed_dict = {
 				bn_tensors['sentence'] : text_batch
 				})
-			print "-------------------------------------------------------"
-			print list_to_string(prediction)
+			# print "-------------------------------------------------------"
+			# print list_to_string(prediction)
 			print "Loss"
 
 			print i, batch_no, loss
@@ -85,7 +88,9 @@ def main():
 			batch_no += 1
 
 			txt = STARTED_DATESTRING+"\n\nN Source Quant: "+str(config['n_source_quant'])+"\nN Target Quant: "+str(config['n_target_quant'])+"\nSample Size: "+ str(config['sample_size'])+"\nBatch Size: "+ str(args.batch_size)+"\nResidual Channels: "+str(config['residual_channels'])+"\nDecoder Filter Width: "+str(config['decoder_filter_width'])+"\nDecoder Dilations: "+str(config['decoder_dilations'])+"\n\nEpoch: "+str(i)+"\nBatch: "+str(batch_no)+"\nLoss: "+str(loss)+"\n\n***<###>***\n\n"+list_to_string(prediction)
-			txt_filename = "Data/Generated/"+ STARTED_DATESTRING+"_Epoch_"+str(i)+"_Batch_"+str(batch_no)+".txt"
+
+			txt_filename = os.path.join(args.output_dir, "{}_Epoch_{}_Batch_{}.txt".format(STARTED_DATESTRING, i, batch_no))
+
 			with open(txt_filename, 'wb') as f:
 				print "Saving:", txt_filename
 				f.write(txt)
@@ -105,3 +110,4 @@ def list_to_string(ascii_list):
 
 if __name__ == '__main__':
 	main()
+
